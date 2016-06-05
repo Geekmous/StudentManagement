@@ -7,8 +7,12 @@
 //
 
 #include "Class.hpp"
-void Class::pushStudent(Student student) {
-    students.push_back(student);
+Class::Class():size(0), students(0){
+}
+
+void Class::pushStudent(Student * student) {
+    (this->size)++;
+    students.push_back(*student);
 }
 
 void Class::popStudent(int id) {
@@ -19,7 +23,7 @@ void Class::popStudent(int id) {
         }
     }
 }
-Student* Class::findStudent(int id) {
+Student & Class::findStudent(int id) {
     unsigned long size = students.capacity();
     Student *student = nullptr;
     for(int i = 0; i < size; i++) {
@@ -27,26 +31,31 @@ Student* Class::findStudent(int id) {
             student = &students[i];
         }
     }
-    return student;
+    if( student == nullptr)
+        cout << "there is no such person" << endl;
+    return *student;
 }
 
 void  Class::writeToDisk() {
-    unsigned long size = students.capacity();
+    auto stu_pd = students.begin();
     
     ofstream file_Student("student.txt", ios_base::out);
     ofstream file_Score("score.txt", ios_base::out);
     
+    cout << "there has " << getSize() << endl;
     
-    //这里似乎还有优化的空间
-    for(int i = 0; i < size; i++) {
-        
-        file_Student << students[i].getId() << " " << students[i].getName() << "\n";
-        vector<Score> score = students[i].getScores();
-        for(int j = 0; j < score.capacity(); j++) {
-            file_Score << students[i].getId() << " " << score[j].getCode() << " " << score[j].getScore() << "\n";
+    for(; stu_pd != students.end(); stu_pd++) {
+        if( stu_pd + 1 < students.end() ) {
+            file_Student << stu_pd->getId() << " " << stu_pd->getName() << "\n";
+            cout << "write :::" << *stu_pd << endl;
+            stu_pd->write2file(file_Score);
         }
+        else {
+        stu_pd->write2file(file_Score);
+        file_Student << stu_pd->getId() << " " << stu_pd->getName();
+        }
+        
     }
-    
     file_Student.close();
     file_Score.close();
     
@@ -55,59 +64,37 @@ void  Class::writeToDisk() {
 
 
 void Class::readFromDisk() {
-    //首先先读取Course
-    ifstream file_Course("./Course.txt");
     ifstream file_Student("./student.txt");
     ifstream file_Score("./score.txt");
-    vector<Course> courses;
-    if(file_Course.is_open()) {
-        while ( !file_Course.eof() ){
-            int code_Course;
-            std::string name;
-            int credit;
-            file_Course >> code_Course >> name >> credit;
-            cout << code_Course << name << credit << endl;
-            Course course(code_Course);
-            courses.push_back(course);
-        }
-        cout << "size of " << courses.capacity() << endl;
-    }
-    else cout << "reading Course.txt failure " << endl;
-    //再读取学生
-    
-    
+    //读取学生
+    cout << "read student " << endl;
     while( !file_Student.eof()) {
         int id;
         std::string name;
         file_Student >> id >> name;
         Student student(id,name);
         students.push_back(student);
-        
+        cout << "read  " << id << name << endl;
     }
     //读取成绩
     vector<Score> scores;
-    while( !file_Score.eof()) {
-        int id;
-        int code_Course;
-        int score;
-        
-        file_Score >> id >> code_Course >> score;
-        Course * course = nullptr;
-        for(int i = 0; i < courses.capacity(); i++) {
-            if( courses[i].getCode() == code_Course) {
-                course = &courses[i];
+    
+    while( !file_Score.eof() ) {
+        int id, code_Course, score;
+        if(file_Score >> id >> code_Course >> score) {
+            Score score1(id, code_Course, score);
+            cout << "read from " << "id : " << id << " code : " << code_Course << " score : " << score << endl;
+            for(int j = 0; j < students.capacity(); j++) {
+                cout << "start loop " << endl;
+                if( id == students[j].getId()) {
+                    cout << "the score" << score1 << " will be push in to " << students[j];
+                    students[j].pushScore(score1);
+                }
             }
         }
-        Score score1(id, code_Course, score);
-        for(int j = 0; j < students.capacity(); j++) {
-            if( id == students[j].getId()) {
-                students[j].pushScore(score1);
-            }
-        }
-        scores.push_back(score1);
+        //scores.push_back(score1);
     }
     file_Score.close();
-    file_Course.close();
     file_Student.close();
 }
 
@@ -186,4 +173,8 @@ void Class::sortByTotalScore() {
 
 vector<Student> Class::getStudents() {
     return students;
+}
+
+int Class::getSize() const{
+    return this->size;
 }

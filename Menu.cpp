@@ -9,7 +9,13 @@
 #include "Menu.hpp"
 Menu::Menu(){
     cla.readFromDisk();
-    cout << "read From Disk" << endl;
+    cla.writeToDisk();
+    //cout << "read From Disk" << endl;
+    vector<Student> student = cla.getStudents();
+    for(int i = 0; i < student.capacity(); i++) {
+        cout << student[i] << endl;
+    }
+    
 }
 void Menu::start() {
     showMainMenu();
@@ -29,6 +35,7 @@ void Menu::showMainMenu() {
             case 1: showStudentInformationMenu();break;
             case 2: showGradeMenu();break;
             case 3: showStatisticMenu();break;
+            case 4:choice = 1;break;
             default: choice = 0;
         }
     }
@@ -44,19 +51,33 @@ void Menu::showStudentInformationMenu() {
         cout << "       1.add student            " << endl;
         cout << "       2.edit student           " << endl;
         cout << "       3.delete student         " << endl;
+        cout << "       4.quit                   " << endl;
         cout << "********************************" << endl;
-        cin >> choise;
+        cout << "Your choice : ";
+        while (!(cin >> choise)) {      //bad input
+            cout << "error input and input again " << endl;
+            cout << "Your choice : ";
+            cin.clear();
+            while( cin.get() != '\n')
+                continue;
+        }
+        
         switch (choise) {
             case 1: {
                 
                         cout << "add student " << endl;
                         cout << "please input ID Name :" << endl;
-                        int id;
+                        int id, code_Course, scores;
                         string name;
-                        int code_Course;
-                        int scores;
                 
-                        cin >> id >> name;
+                        while( !(cin >> id >> name) ) {
+                            cout << "eooro input and please input again" << endl;
+                            cout << "please input ID Name :" << endl;
+                            cin.clear();
+                            while( cin.get() != '\n' )
+                                continue;
+                        }
+                
                         Student student(id, name);
                         cout << " please input CourseCode and Scores(exit with q) " << endl;
                 
@@ -64,7 +85,10 @@ void Menu::showStudentInformationMenu() {
                             Score sco(id, code_Course,scores);
                             student.pushScore(sco);
                         }
-                        cla.pushStudent(student);
+                
+                        Student stu = student;
+                        cout << stu << endl;
+                        cla.pushStudent(&student);
                         cla.writeToDisk();
                         break;
                     }
@@ -73,8 +97,8 @@ void Menu::showStudentInformationMenu() {
                 cout << "please input the id of student :" << endl;
                 
                 if( cin >> id ) {
-                    Student* stu = cla.findStudent(id);
-                    cout << *stu << endl;
+                    Student stu = cla.findStudent(id);
+                    cout << stu << endl;
                     //单独修改
                     
                 }
@@ -89,6 +113,7 @@ void Menu::showStudentInformationMenu() {
                 cla.writeToDisk();
                 break;
             }
+            case 4: choise = 1;break;
             default :choise = 0;
         }
         
@@ -97,8 +122,8 @@ void Menu::showStudentInformationMenu() {
 }
 
 void searchStudent(Class &c, int student_id) {
-    Student* student = c.findStudent(student_id);
-    cout << *student << endl;
+    Student student = c.findStudent(student_id);
+    cout << student << endl;
 }
 void searchCourse(Class &c,const int code_Course) {
     vector<Student> students = c.getStudents();

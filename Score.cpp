@@ -7,8 +7,7 @@
 //
 
 #include "Score.hpp"
-Score::Score(int id, int code_Course, int score):id(id), code_Course(code_Course), score(score){
-    Course course(code_Course);
+Score::Score(int id, int code_Course_, int score):id(id), code_Course(code_Course_), score(score),course(code_Course){
 };
 int Score::getScore() {
     return score;

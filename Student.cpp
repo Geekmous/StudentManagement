@@ -7,9 +7,25 @@
 //
 
 #include "Student.hpp"
-Student::Student(int id, std::string name):id(id),name(name){
-    index = 0;
+Student::Student(){
+    id = -1;
+    name = "Nan";
+    index = -1;
 };
+
+Student::Student(int id, std::string name):id(id),name(name), index(0){
+    vector<Score> sco;
+    scores = sco;
+};
+
+Student::Student(const Student & student) {
+    this->id = student.id;
+    this->name = student.name;
+    this->index = student.index;
+    this->scores = student.scores;
+}
+
+
 
 int Student::getScore(int code_Course) {
     unsigned long size = scores.size();
@@ -43,13 +59,14 @@ int Student::editCourse(int code_Course, int score) {
     return flag;
 }
 
-void Student::pushScore(Score score) {
+void Student::pushScore(Score &score) {
     scores.push_back(score);
 }
 
-vector<Score> Student::getScores() {
+vector<Score> & Student::getScores() {
     return scores;
 }
+
 int Student::getTotalScore() {
     int sum = 0;
     for(int i = 0; i < scores.capacity(); i++) {
@@ -60,10 +77,25 @@ int Student::getTotalScore() {
 
 ostream & operator<<(ostream &os, const Student &s) {
     os << s.id << " " << s.name << " ";
-    for(int i = 0; i < s.scores.capacity(); i++) {
-        os << s.scores[i] << " ";
-    }
+    for( Score score : s.scores)
+        os << score << " ";
+    
     return os;
 }
 
+Student & Student::operator=(Student & student) {
+    if(this == &student)
+        return *this;
+    this->id = student.id;
+    this->name = student.name;
+    this->scores = student.scores;
+    this->index = student.index;
+    return *this;
+}
 
+void Student::write2file(ostream & os) const {
+    string path = "score.txt";
+    for(Score sco : scores)
+        os << id << " " << sco.getCode() << " " << sco.getScore() << "\n" ;
+    
+}

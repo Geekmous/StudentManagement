@@ -17,9 +17,10 @@ class Class {
     int size;
     
 public:
-    void pushStudent(Student student);
+    Class();
+    void pushStudent(Student * student);
     void popStudent(int id);
-    Student* findStudent(int id);
+    Student & findStudent(int id);
     void writeToDisk();
     void readFromDisk();
     void showAllStudent();
@@ -28,6 +29,7 @@ public:
     void sortByCourse(int code_Course,int mode = 0); //mode 0 为降序,1为升序,default 0;
     void sortByTotalScore();
     vector<Student> getStudents();
+    int getSize() const;
 };
 
 #endif /* Class_hpp */

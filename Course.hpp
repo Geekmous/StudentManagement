@@ -18,11 +18,10 @@ class Course{
     std::string name_Course;
     int credit;
 public:
-    Course();
-    Course(int code);                                   //根据code_Course创建Course类
-    int getCode();                                      //得到课程的代码
-    std::string getName();                              //得到课程的名字
-    int getCredit();                                    //得到课程的学分
+    Course(int code);                                         //根据code_Course创建Course类
+    int getCode() const;                                      //得到课程的代码
+    std::string getName() const;                              //得到课程的名字
+    int getCredit() const;                                    //得到课程的学分
     friend ostream & operator<<(ostream & os, const Course & course);
 };
 
