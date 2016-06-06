@@ -25,7 +25,13 @@ Student::Student(const Student & student) {
     this->scores = student.scores;
 }
 
+void Student::setId(int id) {
+    this->id = id;
+}
 
+void Student::setName(string name) {
+    this->name = name;
+}
 
 int Student::getScore(int code_Course) {
     unsigned long size = scores.size();
@@ -47,11 +53,11 @@ std::string Student::getName() {
 }
 
 int Student::editCourse(int code_Course, int score) {
-    long size = scores.size();
     int flag = 0;
-    for ( int i = 0; i < size; i++) {
-        if( scores[i].getCode() == code_Course) {
-            scores[i].setScore(score);
+    auto sco_pd = scores.begin();
+    for (; sco_pd != scores.end(); sco_pd++) {
+        if( sco_pd->getCode() == code_Course) {
+            sco_pd->setScore(score);
             flag = 1;
         }
         

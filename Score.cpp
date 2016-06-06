@@ -25,7 +25,7 @@ std::string Score::getCourseName() {
 }
 
 void Score::setScore(int score) {
-    Score::score = score;
+    this->score = score;
 }
 
 ostream & operator<<(ostream &os, const Score &sco) {     //输入course还有对应的成绩

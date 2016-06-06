@@ -23,9 +23,13 @@ public:
     Student();
     Student(int id, std::string name);
     Student(const Student & student);
+    
+    void setId(int id);
+    void setName(string name);
     int getScore(int code_Course);  //得到某课程代码的成绩
     int getId();                    //得到学生的ID
     std::string getName();          //得到学生的姓名
+    
     int editCourse(int code_Course,int score); //修改某课程代码的成绩
     void pushScore(Score & score);                //把某课程加到学生的课程列表中
     vector<Score> & getScores();                  //返回学生的课程

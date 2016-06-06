@@ -16,49 +16,60 @@ void Class::pushStudent(Student * student) {
 }
 
 void Class::popStudent(int id) {
-    unsigned long size = students.capacity();
-    for( int i = 0; i < size; i++) {
-        if( students[i].getId() == id) {
-            students.erase(students.begin() + i);
+    
+    for( auto stu_pd = students.begin(); stu_pd != students.end(); stu_pd++) {
+        if( stu_pd->getId() == id) {
+            students.erase(stu_pd);
+            break;
         }
     }
 }
-Student & Class::findStudent(int id) {
-    unsigned long size = students.capacity();
-    Student *student = nullptr;
-    for(int i = 0; i < size; i++) {
-        if(students[i].getId() == id) {
-            student = &students[i];
+void Class::findStudent(int id) {
+    auto stu_pd = students.begin();
+    bool flag = false;
+    for(; stu_pd != students.end(); stu_pd++) {
+        if(stu_pd->getId() == id) {
+            cout << *stu_pd << endl;
+            flag = true;
         }
     }
-    if( student == nullptr)
-        cout << "there is no such person" << endl;
-    return *student;
+    if(flag == false)
+        cout << "sorry there are no student of this id" << endl;
+    
+    
+}
+void Class::editStudent(int id,int id_change, string name, int code_Course , int score) {
+    auto stu_pd = students.begin();
+    for(; stu_pd != students.end(); stu_pd++) {
+        if(stu_pd->getId() == id) {
+            stu_pd->setId(id_change);
+            stu_pd->setName(name);
+            stu_pd->editCourse(code_Course, score);
+        }
+    }
 }
 
-void  Class::writeToDisk() {
+void  Class::writeToDisk() {                        //将班级成员的信息写入到文件中
     auto stu_pd = students.begin();
     
     ofstream file_Student("student.txt", ios_base::out);
     ofstream file_Score("score.txt", ios_base::out);
     
-    cout << "there has " << getSize() << endl;
+   // cout << "there has " << getSize() << endl;
     
     for(; stu_pd != students.end(); stu_pd++) {
         if( stu_pd + 1 < students.end() ) {
             file_Student << stu_pd->getId() << " " << stu_pd->getName() << "\n";
-            cout << "write :::" << *stu_pd << endl;
+            //cout << "write :::" << *stu_pd << endl;
             stu_pd->write2file(file_Score);
         }
         else {
         stu_pd->write2file(file_Score);
         file_Student << stu_pd->getId() << " " << stu_pd->getName();
         }
-        
     }
     file_Student.close();
     file_Score.close();
-    
 }
 
 
@@ -67,14 +78,14 @@ void Class::readFromDisk() {
     ifstream file_Student("./student.txt");
     ifstream file_Score("./score.txt");
     //读取学生
-    cout << "read student " << endl;
+    //cout << "read student " << endl;
     while( !file_Student.eof()) {
         int id;
         std::string name;
         file_Student >> id >> name;
         Student student(id,name);
         students.push_back(student);
-        cout << "read  " << id << name << endl;
+    
     }
     //读取成绩
     vector<Score> scores;
@@ -83,25 +94,22 @@ void Class::readFromDisk() {
         int id, code_Course, score;
         if(file_Score >> id >> code_Course >> score) {
             Score score1(id, code_Course, score);
-            cout << "read from " << "id : " << id << " code : " << code_Course << " score : " << score << endl;
             for(int j = 0; j < students.capacity(); j++) {
-                cout << "start loop " << endl;
+                
                 if( id == students[j].getId()) {
-                    cout << "the score" << score1 << " will be push in to " << students[j];
                     students[j].pushScore(score1);
                 }
             }
         }
-        //scores.push_back(score1);
     }
     file_Score.close();
     file_Student.close();
 }
 
 void Class::showAllStudent() {
-    for( int i = 0; i < students.capacity(); i++) {
-        std::cout << students[i].getId() << "  " << students[i].getName() << "  ";
-        vector<Score> score = students[i].getScores();
+    for(auto pd = students.begin(); pd < students.end(); pd++) {
+        std::cout << pd->getId() << "  " << pd->getName() << "  ";
+        vector<Score> score = pd->getScores();
         for(int j = 0; j < score.capacity(); j++) {
             std::cout << score[j].getCourseName() << "  " << score[j].getScore() << "  ";
         }
@@ -117,9 +125,10 @@ void Class::showScoreOfCourse(int code_Course) {
 
 void Class::StatisticFailure(int code_Course) {
     int count = 0;
-    for(int i = 0; i < students.capacity(); i++) {
-        if (students[i].getScore(code_Course) < 60) {
-            std::cout << students[i].getId() << "  " << students[i].getName() << "  " << students[i].getScore(code_Course) << endl;
+    Course cour(code_Course);
+    for(auto pd = students.begin(); pd < students.end(); pd++) {
+        if (pd->getScore(code_Course) < 60) {
+            std::cout << pd->getId() << "  " << pd->getName() << "  " << cour.getName() << " " << pd->getScore(code_Course) << endl;
             count++;
         }
     }
@@ -146,10 +155,6 @@ void Class::sortByCourse(int code_course, int mode){
     for(int i = 0; i < students_temp.capacity(); i++) {
         std::cout << students_temp[i].getId() << "        " << students_temp[i].getName() << "        " << students_temp[i].getScore(code_course) << endl;
     }
-    
-    
-    
-    
 }
 void Class::sortByTotalScore() {
     vector<Student> students_temp = students;

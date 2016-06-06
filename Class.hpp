@@ -20,7 +20,8 @@ public:
     Class();
     void pushStudent(Student * student);
     void popStudent(int id);
-    Student & findStudent(int id);
+    void findStudent(int id) ;
+    void editStudent(int id, int id_change, string name, int code_Course, int score);
     void writeToDisk();
     void readFromDisk();
     void showAllStudent();

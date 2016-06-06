@@ -9,13 +9,7 @@
 #include "Menu.hpp"
 Menu::Menu(){
     cla.readFromDisk();
-    cla.writeToDisk();
-    //cout << "read From Disk" << endl;
-    vector<Student> student = cla.getStudents();
-    for(int i = 0; i < student.capacity(); i++) {
-        cout << student[i] << endl;
-    }
-    
+    //cla.writeToDisk();
 }
 void Menu::start() {
     showMainMenu();
@@ -29,15 +23,21 @@ void Menu::showMainMenu() {
     cout << "      4.exit                      " << endl;
     cout << "************Main   Menu***********" << endl;
     int choice = 0;
-    while ( !choice ) {
-        cin >> choice;
-        switch(choice) {
-            case 1: showStudentInformationMenu();break;
-            case 2: showGradeMenu();break;
-            case 3: showStatisticMenu();break;
-            case 4:choice = 1;break;
-            default: choice = 0;
-        }
+    cout << "your choice :";
+    while( !(cin >> choice) || (choice > 4 || choice < 0)) {
+        cin.clear();
+        while( cin.get() != '\n')
+            continue;
+        cout << "bad input and input again" << endl;
+        cout << "your choice :";
+    }
+    
+    switch(choice) {
+        case 1: showStudentInformationMenu();break;
+        case 2: showGradeMenu();break;
+        case 3: showStatisticMenu();break;
+        case 4: choice = 1;break;
+        default: choice = 0,cout << "bad input and input again" << endl;
     }
     
 }
@@ -45,7 +45,7 @@ void Menu::showMainMenu() {
 void Menu::showStudentInformationMenu() {
     cout << "show all students" << endl;
     cla.showAllStudent();
-    int choise = 0;
+    int choice = 0;
     do {
         cout << "********************************" << endl;
         cout << "       1.add student            " << endl;
@@ -54,15 +54,16 @@ void Menu::showStudentInformationMenu() {
         cout << "       4.quit                   " << endl;
         cout << "********************************" << endl;
         cout << "Your choice : ";
-        while (!(cin >> choise)) {      //bad input
-            cout << "error input and input again " << endl;
-            cout << "Your choice : ";
+        cout << "your choice :";
+        while( !(cin >> choice) || (choice > 4 || choice < 0)) {
             cin.clear();
             while( cin.get() != '\n')
                 continue;
+            cout << "bad input and input again" << endl;
+            cout << "your choice :";
         }
         
-        switch (choise) {
+        switch (choice) {
             case 1: {
                 
                         cout << "add student " << endl;
@@ -97,9 +98,24 @@ void Menu::showStudentInformationMenu() {
                 cout << "please input the id of student :" << endl;
                 
                 if( cin >> id ) {
-                    Student stu = cla.findStudent(id);
-                    cout << stu << endl;
-                    //单独修改
+                    int id_change;
+                    string name_change;
+                    cout << "please input the changed id and name :" << endl;
+                    while( !(cin >> id_change >> name_change)) {
+                        cin.clear();
+                        while( cin.get() != '\n')
+                            continue;
+                        cout << "bad input and input again" << endl;
+                        cout << "please input the changed id and name :" << endl;
+                    }
+                    
+                    int code_Course, score;
+                    cout << "input the code of Course and score (exit if input other words)" << endl;
+                    cout << "code     score" << endl;
+                    while( cin >> code_Course >> score) {
+                        cla.editStudent(id, id_change, name_change, code_Course, score);
+                    }
+                    
                     
                 }
                 cla.writeToDisk();
@@ -109,26 +125,32 @@ void Menu::showStudentInformationMenu() {
             case 3: {
                 int id;
                 cout << "please input the id of student you want to delete:" << endl;
+                while ( !(cin >> id)) {
+                    cin.clear();
+                    while(cin.get() != '\n')
+                        continue;
+                    cout << " bad input and input again " << endl;
+                    cout << "please input the id of student you want to delete:" << endl;
+
+                    
+                }
                 cla.popStudent(id);
                 cla.writeToDisk();
                 break;
             }
-            case 4: choise = 1;break;
-            default :choise = 0;
+            case 4: choice = 1;break;
+            default :choice = 0;
         }
         
-    }while(!choise);
+    }while(!choice);
     
 }
 
-void searchStudent(Class &c, int student_id) {
-    Student student = c.findStudent(student_id);
-    cout << student << endl;
-}
 void searchCourse(Class &c,const int code_Course) {
     vector<Student> students = c.getStudents();
+    Course course(code_Course);
     for(int i = 0; i < students.capacity(); i++) {
-        cout << students[i].getId() << " " << students[i].getName() << " " << students[i].getScore(code_Course) << endl;
+        cout << students[i].getId() << " " << students[i].getName() << " " << course.getName() << " " << students[i].getScore(code_Course) << endl;
     }
 }
 
@@ -137,31 +159,47 @@ void Menu::showGradeMenu() {
     cout << "       1.Search Student         " << endl;
     cout << "       2.Search  Course         " << endl;
     cout << "********************************" << endl;
-    int choise = 0;
-    while ( !choise ) {
-        cin >> choise;
-        switch (choise){
-            case 1:cout << " please input Student ID : " << endl;int id; cin >> id; searchStudent(cla, id);break;
-            case 2:cout << " please input Student Course code : " << endl;int code;cin >> code;searchCourse(cla, code);break;
-            default: choise = 0;
-        }
+    int choice = 0;
+    cout << "your choice :";
+    while( !(cin >> choice) || (choice > 2 || choice < 0)) {
+        cin.clear();
+        while( cin.get() != '\n')
+            continue;
+        cout << "bad input and input again" << endl;
+        cout << "your choice :";
     }
+    
+    switch (choice){
+        case 1:cout << " please input Student ID : " << endl;int id; cin >> id; cla.findStudent(id);break;
+        case 2:cout << " please input Student Course code : " << endl;int code;cin >> code;searchCourse(cla, code);break;
+        default: choice = 0;
+    }
+    
 }
 void Menu::showStatisticMenu() {
     cout << "********************************" << endl;
     cout << "       1.Course failure         " << endl;
     cout << "       2.Sort Scores            " << endl;
     cout << "       3.Sort ToTalScores       " << endl;
+    cout << "       4.exit                   " << endl;
     cout << "********************************" << endl;
-
+    int choice = 0;
+    cout << "your choice :";
+    while( !(cin >> choice) || (choice > 4 || choice < 0)) {
+        cin.clear();
+        while( cin.get() != '\n')
+            continue;
+        cout << "bad input and input again" << endl;
+        cout << "your choice :";
+    }
+    switch (choice) {
+        case 1: cout << "please input the code of the course :";int code_Cour; cin >> code_Cour;cla.StatisticFailure(code_Cour);break;
+        case 2: cout << "please input the code of the course:";int code_Cours; cin >> code_Cours; cla.sortByCourse(code_Cours);break;
+        case 3: cla.sortByTotalScore();break;
+        case 4:break;
+        default: choice = 0;
+        }
 }
-
-
-
-
-
-
-
 
 
 int main(void) {
