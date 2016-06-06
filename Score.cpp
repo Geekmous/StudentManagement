@@ -7,8 +7,7 @@
 //
 
 #include "Score.hpp"
-Score::Score(int id, int code_Course, int score):id(id), code_Course(code_Course), score(score){
-    Course course(code_Course);
+Score::Score(int id, int code_Course_, int score):id(id), code_Course(code_Course_), score(score),course(code_Course){
 };
 int Score::getScore() {
     return score;
@@ -26,7 +25,7 @@ std::string Score::getCourseName() {
 }
 
 void Score::setScore(int score) {
-    Score::score = score;
+    this->score = score;
 }
 
 ostream & operator<<(ostream &os, const Score &sco) {     //输入course还有对应的成绩

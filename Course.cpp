@@ -7,33 +7,35 @@
 //
 
 #include "Course.hpp"
-Course::Course(){};
 Course::Course(int code):code_Course(code){
     ifstream fis("./Course.txt");
     std::string name_temp;
-    int credit_temp;
-    int code_temp;
+    int credit_temp, code_temp;
     if(fis.is_open()) {
         while(!fis.eof()) {
             fis >> code_temp >> name_temp >> credit_temp;
             if(code_temp == code) {
-                code_Course = code_temp;
-                name_Course = name_temp;
-                credit = credit_temp;
+                this->code_Course = code_temp;
+                this->name_Course = name_temp;
+                this->credit = credit_temp;
             }
         }
+    }else {
+        this->code_Course = -1;
+        this->name_Course = "NAN";
+        this->credit = -1;
     }
     fis.close();
 };
 
 
-int Course::getCode() {
+int Course::getCode() const {
     return code_Course;
 };
-std::string Course::getName(){
+std::string Course::getName() const {
     return name_Course;
 };
-int Course::getCredit() {
+int Course::getCredit() const {
     return credit;
 };
 
